@@ -1,0 +1,67 @@
+-- Load Customer Information from the CRM source file
+
+BULK INSERT bronze.crm_cust_info
+FROM '\source_crm\cust_info.csv'
+WITH (
+    -- Defines that a comma is the character separating each column in the CSV.
+    FIELDTERMINATOR = ',',
+    -- Skip the header row in the CSV file
+    FIRSTROW = 2,
+    -- A performance optimization that locks the table during the bulk load, which can make the insert faster.
+    TABLOCK
+);
+
+
+BULK INSERT bronze.crm_prd_info
+FROM '\source_crm\prd_info.csv'
+WITH (
+    FIELDTERMINATOR = ',',
+    -- Skip the header row in the CSV file
+    FIRSTROW = 2,
+    -- TABLOCK is used to improve bulk insert performance by acquiring a table-level lock
+    TABLOCK
+);
+
+BULK INSERT bronze.crm_sales_details
+FROM '\source_crm\sales_details.csv'
+WITH (
+    FIELDTERMINATOR = ',',
+    -- Skip the header row in the CSV file
+    FIRSTROW = 2,
+    -- TABLOCK is used to improve bulk insert performance by acquiring a table-level lock
+    TABLOCK
+);
+
+BULK INSERT bronze.erp_cust_az12
+FROM '\source_erp\CUST_AZ12.csv'
+WITH (
+    FIELDTERMINATOR = ',',
+    -- Skip the header row in the CSV file
+    FIRSTROW = 2,
+    -- TABLOCK is used to improve bulk insert performance by acquiring a table-level lock
+    TABLOCK
+);
+
+BULK INSERT bronze.erp_loc_a101
+FROM '\source_erp\LOC_A101.csv'
+WITH (
+    FIELDTERMINATOR = ',',
+    -- Skip the header row in the CSV file
+    FIRSTROW = 2,
+    -- TABLOCK is used to improve bulk insert performance by acquiring a table-level lock
+    TABLOCK
+);
+
+
+BULK INSERT bronze.erp_px_cat_g1v2
+FROM '\source_erp\PX_CAT_G1V2.csv'
+WITH (
+    FIELDTERMINATOR = ',',
+    -- Skip the header row in the CSV file
+    FIRSTROW = 2,
+    -- TABLOCK is used to improve bulk insert performance by acquiring a table-level lock
+    TABLOCK
+);
+
+
+
