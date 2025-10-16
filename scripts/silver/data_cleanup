@@ -1,0 +1,24 @@
+-- Run these codes after the data cleanup to test if all is as should be.
+
+--Checks for duplicate or multiple logs of the primary key (customer ID). The expected result is 0. Do this for the cst_id, which is supposed to be a unique value.
+SELECT
+    cst_id,
+    COUNT(*) AS "Count"
+FROM silver.crm_cust_info
+GROUP BY cst_id
+HAVING COUNT(*) > 1 OR cst_id IS NULL
+;
+
+
+--Checks for unwanted spaces in the names. The expected result is 0. Use for the firstname and lastname columns
+SELECT
+        cst_lastname
+FROM silver.crm_cust_info
+WHERE cst_lastname != TRIM(cst_lastname);
+
+/*
+
+
+SELECT DISTINCT
+        cst_marital_status
+FROM silver.crm_cust_info;
