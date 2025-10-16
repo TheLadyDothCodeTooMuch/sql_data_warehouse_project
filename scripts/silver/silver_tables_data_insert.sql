@@ -97,3 +97,96 @@ INSERT INTO silver.crm_prd_info (
     */
 ;
 
+
+-- ===============================================
+-->> silver.crm_sales_details table values insert
+-- ===============================================
+
+DROP TABLE IF EXISTS silver.crm_sales_details;
+
+CREATE TABLE silver.crm_sales_details (
+	sls_ord_num varchar(50) NULL,
+	sls_prd_key varchar(50) NULL,
+	sls_cust_id INT NULL,
+	sls_order_dt DATE NULL,
+	sls_ship_dt DATE NULL,
+	sls_due_dt DATE NULL,
+	sls_sales INT NULL,
+	sls_quantity INT NULL,
+	sls_price INT NULL,
+    dwh_create_date DATETIME2 DEFAULT GETDATE()
+);
+
+
+-- Use a CTE to perform cleaning in logical steps
+WITH CleanedSales AS (
+    -- Step 1: Clean only the sls_sales column first, leave others as is.
+    SELECT
+        sls_ord_num,
+        sls_prd_key,
+        sls_cust_id,
+     	-- Validate and convert the order date.
+        CASE
+			-- First, handle obviously bad data: set to NULL if the date is zero or not 8 characters long (expected format: YYYYMMDD).
+            WHEN sls_order_dt = 0 OR LEN(sls_order_dt) <> 8 THEN NULL
+			-- If the basic format is reasonable, safely attempt to cast the string to a DATE. 
+			-- TRY_CAST returns NULL on failure instead of crashing.
+            ELSE TRY_CAST(sls_order_dt AS DATE)
+        END AS sls_order_dt,
+		-- Repeat the same validation and conversion logic for the ship date.
+        CASE
+            WHEN sls_ship_dt = 0 OR LEN(sls_ship_dt) <> 8 THEN NULL
+            ELSE TRY_CAST(sls_ship_dt AS DATE)
+        END AS sls_ship_dt,
+		-- Repeat the same validation and conversion logic for the due date.
+        CASE
+            WHEN sls_due_dt = 0 OR LEN(sls_due_dt) <> 8 THEN NULL
+            ELSE TRY_CAST(sls_due_dt AS DATE)
+        END AS sls_due_dt,
+        -- Correct the sales value based on original quantity and price
+        CASE 
+            WHEN sls_sales <> (sls_quantity * sls_price) OR sls_sales IS NULL
+            THEN ABS(sls_quantity * sls_price)
+            ELSE sls_sales
+        END AS sls_sales,
+        -- Pass through the original quantity and price for the next step
+        sls_quantity,
+        sls_price
+    FROM
+        bronze.crm_sales_details
+)
+
+-- Step 2: Insert into the silver table, now using the cleaned data from the CTE.
+INSERT INTO silver.crm_sales_details (
+    sls_ord_num, 
+    sls_prd_key, 
+    sls_cust_id, 
+    sls_order_dt, 
+    sls_ship_dt, 
+    sls_due_dt,
+    sls_sales, 
+    sls_quantity, 
+    sls_price
+)
+SELECT 
+    sls_ord_num, 
+    sls_prd_key, 
+    sls_cust_id, 
+    sls_order_dt, 
+    sls_ship_dt, 
+    sls_due_dt,
+    -- This sls_sales is now the CLEANED value from the CTE
+    sls_sales,
+    -- The quantity and price can now be cleaned using the corrected sls_sales
+    CASE
+        WHEN sls_quantity IS NULL OR sls_quantity <> (sls_sales / NULLIF(sls_price, 0))
+        THEN ABS(sls_sales / NULLIF(sls_price, 0))
+        ELSE sls_quantity
+    END AS sls_quantity,
+    CASE
+        WHEN sls_price IS NULL OR sls_price <> (sls_sales / NULLIF(sls_quantity, 0))
+        THEN ABS(sls_sales / NULLIF(sls_quantity, 0))
+        ELSE sls_price
+    END AS sls_price
+FROM 
+    CleanedSales;
