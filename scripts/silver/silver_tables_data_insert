@@ -2,7 +2,9 @@
 -- Adds cleaned up data into the tables
 -- ====================================
 
+-- ============================================
 -->> silver.crm_cust_info table values insert
+-- ============================================
 
 INSERT INTO silver.crm_cust_info(cst_id, cst_key, cst_firstname, cst_lastname, cst_marital_status, cst_gndr, cst_create_date)
 SELECT
@@ -28,3 +30,70 @@ FROM (SELECT
     WHERE flag_last = 1;
 
 ;
+
+
+-- ============================================
+-->> silver.crm_cust_info table values insert
+-- ============================================
+
+-- Step 1: Ensure the script is re-runnable by dropping the table if it exists.
+DROP TABLE IF EXISTS silver.crm_prd_info;
+
+-- Step 2: Define the schema for the cleaned, silver-layer product table.
+-- The dwh_cat_id column is a created column for the first five digit of the prd_key to be used in referencing other tables
+-- The dwh_create_date column tracks when the record was inserted into the warehouse.
+CREATE TABLE silver.crm_prd_info (
+	prd_id int NULL,
+    dwh_cat_id varchar(50) NULL,
+	prd_key varchar(50) NULL,
+	prd_nm varchar(50) NULL,
+	prd_cost INT NULL,
+	prd_line varchar(50) NULL,
+	prd_start_dt date NULL,
+	prd_end_dt date NULL,
+    dwh_create_date DATETIME2 DEFAULT GETDATE()
+);
+
+-- Step 3: Insert and transform data from the bronze layer.
+INSERT INTO silver.crm_prd_info (
+    prd_id, 
+    prd_key, 
+    dwh_cat_id, 
+    prd_nm, 
+    prd_cost, 
+    prd_line, 
+    prd_start_dt, 
+    prd_end_dt)
+        SELECT
+            prd_id,
+            prd_key,
+            -- Extract the first 5 characters as a standardized category ID.
+            REPLACE(SUBSTRING(prd_key, 1, 5), '-', '_') AS dwh_cat_id,
+            --REPLACE(SUBSTRING(prd_key, 7, (LEN(prd_key)-6)), '-', '_') AS prd_key_2,
+            prd_nm,
+            -- Replace any missing costs with 0 to prevent calculation errors.
+            COALESCE(prd_cost, 0) AS prd_cost,
+            -- Change the product line for better readability in reports.
+            CASE
+                WHEN UPPER(prd_line) = 'M' THEN 'Mountain'
+                WHEN UPPER(prd_line) = 'R' THEN 'Road'
+                WHEN UPPER(prd_line) = 'S' THEN 'Others'
+                WHEN UPPER(prd_line) = 'T' THEN 'Touring'
+                ELSE 'n/a'
+            END AS prd_line,
+            -- Standardize the start date by removing any time component from the bronze layer.
+            CAST(prd_start_dt AS DATE) AS prd_start_dt,
+            -- Calculate the end date. This is the day the next version of the same product record starts.
+            -- The most current record will have a NULL end date.
+            CAST(LEAD(prd_start_dt) OVER(PARTITION BY prd_key ORDER BY prd_start_dt ASC) AS DATE) AS prd_end_dt
+            -- ROW_NUMBER() OVER(PARTITION BY prd_key ORDER BY prd_start_dt DESC) AS flag_last
+    FROM bronze.crm_prd_info
+    --WHERE flag_last != 1;
+    --WHERE REPLACE(SUBSTRING(prd_key, 1, 5), '-', '_') NOT IN
+    /*WHERE REPLACE(SUBSTRING(prd_key, 7, (LEN(prd_key)-6)), '-', '_') NOT IN
+    (SELECT DISTINCT
+        id
+    FROM bronze.erp_px_cat_g1v2);
+    */
+;
+
