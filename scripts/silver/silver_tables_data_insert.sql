@@ -190,3 +190,44 @@ SELECT
     END AS sls_price
 FROM 
     CleanedSales;
+
+
+-- ===============================================
+-->> silver.erp_cust_az12 table values insert
+-- ===============================================
+
+DROP TABLE IF EXISTS silver.erp_cust_az12;
+
+CREATE TABLE silver.erp_cust_az12 (
+    CID VARCHAR(50),
+    bdate DATE,
+    gen VARCHAR(10)
+);
+
+INSERT INTO silver.erp_cust_az12 (
+    CID, 
+    bdate, 
+    gen)
+SELECT
+    CASE
+        WHEN CID LIKE 'NAS%' THEN SUBSTRING(CID, 4, len(CID)) 
+        ELSE CID
+    END AS CID,
+    CASE
+        WHEN bdate > GETDATE() THEN NULL
+        ELSE bdate
+    END AS bdate,
+    CASE
+        WHEN TRIM(UPPER(gen)) IN ('F', 'FEMALE') THEN 'Female'
+        WHEN TRIM(UPPER(gen)) IN ('M', 'MALE') THEN 'Male'
+        ELSE 'n/a'
+    END AS gen
+FROM bronze.erp_cust_az12;
+/*WHERE CASE
+        WHEN CID LIKE 'NAS%' THEN SUBSTRING(CID, 4, len(CID)) 
+        ELSE CID
+    END NOT IN (
+                SELECT DISTINCT
+                    cst_key
+                FROM silver.crm_cust_info)
+*/
