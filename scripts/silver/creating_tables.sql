@@ -10,6 +10,7 @@ cst_lastname VARCHAR(50),
 cst_marital_status VARCHAR(2),
 cst_gndr VARCHAR(2),
 cst_create_date DATE,
+-- Audit column to track when the record was loaded.
 dwh_create_date DATETIME2 DEFAULT GETDATE()
 );
 
