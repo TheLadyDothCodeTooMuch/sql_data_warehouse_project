@@ -24,8 +24,6 @@ SELECT DISTINCT
 FROM silver.crm_cust_info;
 
 
-
-
 -- ======================================================================================
 -- Run these codes for crm_prd_info after the data cleanup to test if all is as should be
 -- ======================================================================================
@@ -134,8 +132,6 @@ WHERE sls_sales != sls_quantity * sls_price OR sls_sales IS NULL OR sls_quantity
 -- Run these codes for silver.crm_sales_details after the data cleanup to test if all is as should be
 -- ===================================================================================================
 
--- Run these codes after the data cleanup to test if all is as should be.
-
 --Checks for duplicate or multiple logs of the primary key. The expected result is 0. Do this for the CID, 
 -- which is supposed to be a unique value.
 SELECT
@@ -173,5 +169,42 @@ WHERE BDATE < '1925-01-01' or BDATE > GETDATE()
 SELECT DISTINCT
         gen
 FROM silver.erp_cust_az12
+--WHERE gen != TRIM(gen)
+;
+
+
+-- ===================================================================================================
+-- Run these codes for silver.crm_sales_details after the data cleanup to test if all is as should be
+-- ===================================================================================================
+
+--Checks for duplicate or multiple logs of the primary key. The expected result is 0. Do this for the cst_id, which is supposed to be a unique value.
+SELECT
+    dwh_cid
+FROM silver.erp_loc_a101
+GROUP BY dwh_cid
+HAVING COUNT(*) > 1 OR dwh_cid IS NULL
+;
+
+-- Same use as the above.
+SELECT
+*
+FROM (SELECT
+        *,
+        ROW_NUMBER() OVER(PARTITION BY dwh_cid ORDER BY cntry DESC) AS flag_last
+        FROM silver.erp_loc_a101) AS t
+WHERE flag_last != 1;
+
+--Checks for unwanted spaces in CNTRY. The expected result is 0.
+SELECT
+        CNTRY
+FROM silver.erp_loc_a101
+WHERE CNTRY != TRIM(CNTRY)
+;
+
+-- Check all countries listed. The expected result should be only be the full name of the countries or n/a
+SELECT DISTINCT
+        CNTRY
+FROM silver.erp_loc_a101
+ORDER BY cntry
 --WHERE gen != TRIM(gen)
 ;
