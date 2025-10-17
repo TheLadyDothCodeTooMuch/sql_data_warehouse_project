@@ -231,3 +231,42 @@ FROM bronze.erp_cust_az12;
                     cst_key
                 FROM silver.crm_cust_info)
 */
+
+-- ===============================================
+-->> silver.erp_loc_a101 table values insert
+-- ===============================================
+DROP TABLE IF EXISTS silver.erp_loc_a101;
+
+CREATE TABLE silver.erp_loc_a101 (
+    dwh_cid VARCHAR(50),
+    cntry VARCHAR(50),
+    dwh_create_date DATETIME2 DEFAULT GETDATE()
+);
+
+INSERT INTO silver.erp_loc_a101 (
+    dwh_cid,
+    cntry
+)
+SELECT
+	-- Generates the standardized dwh_cid by removing the 3rd character (e.g., a legacy hyphen) from the source key.
+    STUFF(cid, 3, 1, ''),
+	-- (Commented out) Alternative, less efficient methods for the key transformation.
+    --CONCAT(SUBSTRING(cid, 1, 2), SUBSTRING(cid, 4, LEN(cid))) AS CID,
+    --REPLACE(cid, '-', '') AS CID
+    CASE 
+        WHEN TRIM(cntry) = 'DE' THEN 'Germany'
+        WHEN TRIM(cntry) IN ('US', 'USA') THEN 'United States'
+        WHEN TRIM(cntry) = '' OR cntry IS NULL THEN 'n/a'
+        ELSE cntry
+    END
+FROM bronze.erp_loc_a101
+/* WHERE CONCAT(SUBSTRING(cid, 1, 2), SUBSTRING(cid, 4, LEN(cid))) not IN (
+        SELECT
+            cst_key
+        FROM silver.crm_cust_info);
+*/
+
+
+SELECT
+            *
+        FROM silver.erp_loc_a101;
