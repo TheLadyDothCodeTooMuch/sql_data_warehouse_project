@@ -266,7 +266,18 @@ FROM bronze.erp_loc_a101
         FROM silver.crm_cust_info);
 */
 
+-- ===============================================
+-->> silver.erp_px_cat_g1v2 table values insert
+-- ===============================================
+DROP TABLE IF EXISTS silver.erp_px_cat_g1v2;
 
+INSERT INTO silver.erp_px_cat_g1v2 (
+   ID,
+   CAT,
+   SUBCAT,
+   MAINTENANCE
+)
 SELECT
-            *
-        FROM silver.erp_loc_a101;
+    *
+FROM bronze.erp_px_cat_g1v2;
+
