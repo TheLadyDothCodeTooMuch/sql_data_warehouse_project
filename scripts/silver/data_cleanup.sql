@@ -174,7 +174,7 @@ FROM silver.erp_cust_az12
 
 
 -- ===================================================================================================
--- Run these codes for silver.crm_sales_details after the data cleanup to test if all is as should be
+-- Run these codes for silver.erp_loc_a101 after the data cleanup to test if all is as should be
 -- ===================================================================================================
 
 --Checks for duplicate or multiple logs of the primary key. The expected result is 0. Do this for the cst_id, which is supposed to be a unique value.
@@ -207,4 +207,37 @@ SELECT DISTINCT
 FROM silver.erp_loc_a101
 ORDER BY cntry
 --WHERE gen != TRIM(gen)
+;
+
+
+-- ===================================================================================================
+-- Run these codes for silver.erp_px_cat_g1v2 after the data cleanup to test if all is as should be
+-- ===================================================================================================
+--Checks for duplicate or multiple logs of the primary key. The expected result is 0. 
+SELECT
+    ID,
+    CAT,
+    COUNT(ID)
+FROM silver.erp_px_cat_g1v2
+GROUP BY ID
+HAVING COUNT(ID) > 1 OR ID IS NULL
+;
+
+--Checks for unwanted spaces. The expected result is 0.
+SELECT
+        *
+FROM silver.erp_px_cat_g1v2
+WHERE CAT != TRIM(CAT) OR 
+SUBCAT != TRIM(SUBCAT) OR 
+MAINTENANCE != TRIM(MAINTENANCE)
+;
+
+
+-- Check all subcategories or maintenance values listed. There should be no NULLs
+
+SELECT DISTINCT
+        MAINTENANCE
+FROM silver.erp_px_cat_g1v2
+--WHERE SUBCAT != TRIM(SUBCAT)
+--ORDER BY SUBCAT
 ;
