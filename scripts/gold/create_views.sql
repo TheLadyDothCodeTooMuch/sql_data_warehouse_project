@@ -50,7 +50,7 @@ CREATE VIEW gold.dim_products AS
 SELECT
     ROW_NUMBER() OVER(ORDER BY pn.prd_start_dt ASC, pn.prd_key ASC) AS id,
     pn.prd_id AS product_id,
-    pn.prd_key AS product_number,
+    SUBSTRING(pn.prd_key, 7, LEN(pn.prd_key)) AS product_number,
     pn.prd_nm AS product_name,
     pn.dwh_cat_id AS category_id,
 	pc.CAT AS category,
