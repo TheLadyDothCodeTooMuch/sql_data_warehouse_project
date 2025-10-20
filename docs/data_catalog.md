@@ -14,7 +14,7 @@ Each view is derived from cleaned and standardized Silver Layer data.
 | `last_name`       | VARCHAR(100)  | Customer’s last name                             | `crm_cust_info.cst_lastname`                   | Direct mapping                                         |
 | `country`         | VARCHAR(50)   | Customer’s country                               | `erp_loc_a101.cntry`                           | Joined via `ci.cst_key = la.dwh_cid`                   |
 | `marital_status`  | VARCHAR(20)   | Customer’s marital status                        | `crm_cust_info.cst_marital_status`             | Direct mapping                                         |
-| `gender`          | VARCHAR(10)   | Customer gender (CRM preferred)                  | `crm_cust_info.cst_gndr` / `erp_cust_az12.gen` | Uses CRM gender unless `'n/a'`, else falls back to ERP |
+| `gender`          | VARCHAR(10)   | Customer gender (CRM preferred) (e.g. Male, female or n/a                  | `crm_cust_info.cst_gndr` / `erp_cust_az12.gen` | Uses CRM gender unless `'n/a'`, else falls back to ERP |
 | `birthdate`       | DATE          | Customer’s birth date                            | `erp_cust_az12.bdate`                          | From ERP                                               |
 | `create_date`     | DATE          | Record creation date                             | `crm_cust_info.cst_create_date`                | From CRM                                               |
 
