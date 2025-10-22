@@ -1,4 +1,4 @@
-# sql_data_warehouse_project
+# SQL Data Warehouse Project
 Building a modern data warehouse with SQL, including ETL processes, data modelling and analytics.
 
 
@@ -8,7 +8,7 @@ Building a modern data warehouse with SQL, including ETL processes, data modelli
 
 ## 📊 Project Summary
 This project provides analytical SQL views for understanding business performance across customers and products.  
-Using the **fact_sales**, **dim_customers**, and **dim_products** tables from the gold layer, these queries generate summarized metrics such as total sales, order frequency, customer lifetime value, and product performance categories.
+Using the **fact_sales**, **dim_customers**, and **dim_products** tables from the gold layer under the SQL Datawarehouse Project, these queries generate summarized metrics such as total sales, order frequency, customer lifetime value, and product performance categories.
 
 The goal is to help analysts and stakeholders quickly identify high-value customers, top-performing products, and key revenue trends.
 
