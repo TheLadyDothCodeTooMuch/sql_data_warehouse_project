@@ -38,7 +38,6 @@ This layer serves as a **staging and archival zone** — transformations never m
 **Tables:** `silver.crm_prd_info`, `silver.crm_sales_details`, `silver.erp_loc_a101`, etc.  
 **Description:**  
 This layer applies **business rules, cleaning, and conformance** to integrate CRM and ERP data.  
-All **BI dashboards and reports** should query from this layer.
 
 ---
 
@@ -46,6 +45,8 @@ All **BI dashboards and reports** should query from this layer.
 **Purpose:** *(Future implementation)* Business-level aggregates  
 **Description:**  
 Planned for data marts such as `gold.monthly_sales_summary`, summarizing performance by product, region, or time period.
+All **BI dashboards and reports** should query from this layer.
+
 
 ---
 
@@ -58,9 +59,9 @@ The **Silver layer** is modeled as a simple **star schema** for efficient queryi
                 │ silver.crm_cust_info│
                 └───────────┬────────┘
                             │
-┌────────────────────┐  ┌───▼──────────────┐  ┌────────────────────┐
-│ silver.crm_prd_info│──▶ silver.crm_sales │◀─│ silver.erp_loc_a101│
-└────────────────────┘  └──────────────────┘  └────────────────────┘
+┌────────────────────┐  ┌───▼───────────────────────┐  ┌────────────────────┐
+│ silver.crm_prd_info│──▶ silver.crm_sales_details │◀─│ silver.erp_loc_a101│
+└────────────────────┘  └───────────────────────────┘  └────────────────────┘
 ```
 
 ### Fact Tables (The “actions”)
