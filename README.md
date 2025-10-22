@@ -16,7 +16,7 @@ The goal is to help analysts and stakeholders quickly identify high-value custom
 
 ## 🧱 SQL Views
 
-### 1. `data_analysis_project`
+### 1. `data_analysis_customers`
 This view aggregates **customer-level performance** metrics including:
 - Total spend, order count, and product diversity
 - Average revenue per order
