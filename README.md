@@ -240,11 +240,25 @@ Evaluate product performance, monitor sales trends, and inform inventory or mark
 ## 📁 Folder Structure
 ```bash
 Data-Analysis-Project/
-│
-├── sql/
+├── advanced_data_analysis/
 │   ├── data_analysis_customers.sql
 │   ├── data_analysis_products.sql
-│
-├── README.md
-└── LICENSE
+├── exploratory_data_analysis/
+│   ├── category_depth.sql
+│   ├── cost_analysis.sql
+│   ├── country_sales_volume.sql
+│   ├── customer_age_span.sql
+│   ├── customer_revenue_ranking.sql
+│   ├── gender_insights.sql
+│   ├── geographic_insights.sql
+│   ├── least_products.sql
+│   ├── low_order_count.sql
+│   ├── monthly_revenue_trends.sql
+│   ├── order_range.sql
+│   ├── revenue_by_category.sql
+│   ├── revenue_trends.sql
+│   ├── running_totals.sql
+│   ├── sales_span.sql
+│   ├── sales_summary.sql
+
 
